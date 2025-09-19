@@ -6,7 +6,7 @@ metadata:
   labels:
     app: jellynotifier
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: jellynotifier
@@ -46,6 +46,14 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /webhook
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
         env:
         - name: PORT
           value: "8080"
