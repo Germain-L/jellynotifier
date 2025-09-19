@@ -3,6 +3,8 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   REGISTRY: registry.germainleignel.com
@@ -15,7 +17,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write # Required for signing
+      id-token: write
 
     steps:
     - name: Checkout repository
@@ -23,9 +25,6 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
-    - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.6.0
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.6.0
@@ -47,7 +46,7 @@ jobs:
           type=ref,event=branch
           type=ref,event=pr
           type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+          type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build and push Docker image
       id: build
@@ -60,9 +59,7 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        platforms: linux/amd64
-        # Temporarily disabled ARM64 due to build timeouts
-        # platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64,linux/arm64
 
     - name: Sign Docker image
       if: github.event_name != 'pull_request'
@@ -70,23 +67,12 @@ jobs:
         COSIGN_EXPERIMENTAL: 1
       run: |
         echo "Signing image with tags:"
-        echo "${{ steps.meta.outputs.tags }}"
         echo "${{ steps.meta.outputs.tags }}" | while read tag; do
-          echo "Signing: $tag"
-          cosign sign --yes "$tag"
+          if [ -n "$tag" ]; then
+            echo "Signing: $tag"
+            cosign sign --yes "$tag"
+          fi
         done
 
-    - name: Sign Docker image
-      if: github.event_name != 'pull_request'
-      env:
-        COSIGN_EXPERIMENTAL: 1
-      run: |
-        echo "Signing image with tags:"
-        echo "${{ steps.meta.outputs.tags }}"
-        echo "${{ steps.meta.outputs.tags }}" | while read tag; do
-          echo "Signing: $tag"
-          cosign sign --yes "$tag"
-        done
-
-    - name: Image digest
-      run: echo ${{ steps.build.outputs.digest }}
+    - name: Output image digest
+      run: echo "Image digest: ${{ steps.build.outputs.digest }}"
