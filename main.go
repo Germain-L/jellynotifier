@@ -53,8 +53,15 @@ type Notification struct {
 func main() {
 	// Set up the HTTP server
 	http.HandleFunc("/webhook", webhookHandler)
+	http.HandleFunc("/health", healthHandler)
 	fmt.Println("Server starting on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	// Simple health check endpoint that accepts GET requests
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "OK")
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
