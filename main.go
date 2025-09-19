@@ -54,6 +54,7 @@ func main() {
 	// Set up the HTTP server
 	http.HandleFunc("/webhook", webhookHandler)
 	http.HandleFunc("/health", healthHandler)
+	http.HandleFunc("/test", testHandler)
 	fmt.Println("Server starting on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -62,6 +63,13 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	// Simple health check endpoint that accepts GET requests
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "OK")
+}
+
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	// Test endpoint for webhook testing - accepts both GET and POST
+	log.Printf("Test endpoint hit with method: %s", r.Method)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "Test successful")
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
