@@ -75,4 +75,4 @@ jobs:
         done
 
     - name: Output image digest
-      run: echo "Image digest: ${{ steps.build.outputs.digest }}"
+      run: 'echo "Image digest: ${{ steps.build.outputs.digest }}"'
