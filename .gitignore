@@ -1,0 +1,39 @@
+# Go build artifacts
+jellynotifier
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of go coverage tool
+*.coverprofile
+
+# Dependency directories (remove the leading slash if you want to include vendor dir)
+/vendor/
+
+# IDE/editor files
+*.swp
+*.swo
+*.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Docker
+*.tar
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Kubernetes manifests (optional, if you want to ignore generated files)
+*.yaml~
+
+# Go module files (keep these tracked)
+!go.mod
+!go.sum
+
