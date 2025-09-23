@@ -30,9 +30,6 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-        volumeMounts:
-        - name: database-storage
-          mountPath: /app/data
         livenessProbe:
           httpGet:
             path: /health
@@ -60,11 +57,6 @@ spec:
         env:
         - name: PORT
           value: "8080"
-      volumes:
-      - name: database-storage
-        hostPath:
-          path: /home/gmn/content/jellynotifier
-          type: DirectoryOrCreate
       restartPolicy: Always
       securityContext:
         runAsNonRoot: true
